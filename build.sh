@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 #
 # build.sh for my Dockerfiles (essence)
 #
@@ -18,13 +19,31 @@ get_version() {
   echo $(cat ./VERSION)
 }
 
+mk_compose() {
+cat <<EOT > ./docker-compose.yaml
+version: '3'
+services:
+  essence:
+    image: essence:${version}
+    env_file:
+      - project.env
+    ports:
+     - "8001-8010:8001-8010"
+EOT
+}
+
 env=$(get_env)
 version=$(get_version)
 
-# normal docker build
-#docker build -t test:"$version" --build-arg "$env" . || echo 'build failed'
-#exit 0
+# image build
+if [ $(docker build -t essence:"$version" --build-arg "$env" . >/dev/null 2>&1 && echo 0) != 0 ]; then
+  echo "build failed"
+  exit 1
+fi
 #
 
-# compose build
-[[ -f ./docker-compose.yaml ]] && docker-compose up
+# compose
+if [ $1 == 'compose' ]; then
+  mk_compose || exit 1
+  [[ -f ./docker-compose.yaml ]] && docker-compose up
+fi
