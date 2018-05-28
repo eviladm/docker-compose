@@ -43,7 +43,9 @@ fi
 #
 
 # compose
-if [ $1 == 'compose' ]; then
-  mk_compose || exit 1
-  [[ -f ./docker-compose.yaml ]] && docker-compose up
+if [ $1 ]; then
+  if [ $1 == 'compose' ]; then
+    mk_compose || exit 1
+    [[ -f ./docker-compose.yaml ]] && docker-compose up
+  fi
 fi
