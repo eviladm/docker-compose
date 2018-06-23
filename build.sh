@@ -36,16 +36,18 @@ env=$(get_env)
 version=$(get_version)
 
 # image build
-if [ $(docker build -t essence:"$version" --build-arg "$env" . >/dev/null 2>&1 && echo 0) != 0 ]; then
+if [ $(docker build -t essence:"$version" --build-arg "$env" . >/dev/null 2>&1; echo $?) != 0 ]; then
   echo "build failed"
   exit 1
 fi
 #
 
 # compose
-if [ $1 ]; then
-  if [ $1 == 'compose' ]; then
+if [ "$1" ]; then
+  if [ "$1" == 'compose' ]; then
     mk_compose || exit 1
-    [[ -f ./docker-compose.yaml ]] && docker-compose up
+    if [ -f ./docker-compose.yaml ]; then
+      docker-compose up
+    fi
   fi
 fi

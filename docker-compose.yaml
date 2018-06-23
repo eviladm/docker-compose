@@ -1,7 +1,7 @@
 version: '3'
 services:
   essence:
-    image: essence:1.0.0
+    image: essence:1.0.1
     env_file:
       - project.env
     ports:
